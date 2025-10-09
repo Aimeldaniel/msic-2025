@@ -9,7 +9,14 @@
   <title>MSIC - Malaysian Standard Industrial Code</title>
 
   <style>
-    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 0; text-align: center; }
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f9f9f9; 
+      margin: 0; 
+      padding: 0; 
+      text-align: center; 
+      padding-bottom: 80px; /* prevent footer overlap */
+    }
     header { margin: 20px 0; position: relative; }
     .window-box { display: inline-block; border: 2px solid #000; border-radius: 5px; padding: 20px 40px; margin: 20px auto; background: #fff; box-shadow: 4px 4px 0px #000; }
     .window-box h1 { margin: 0; font-size: 28px; }
@@ -31,9 +38,25 @@
     .lang-switch { position: absolute; top: 15px; right: 15px; padding: 8px 15px; background: #007a8e; color: white; border: none; border-radius: 8px; cursor: pointer; }
 
     /* Table styles */
-    table { width: 95%; margin: 20px auto; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 14px; background: #fff; }
+    .table-container { 
+      width: 95%; 
+      max-width: 1200px; 
+      margin: 20px auto; 
+      overflow-x: auto; 
+    }
+    table { 
+      width: 1200px; /* fixed width */
+      min-width: 1000px; 
+      border-collapse: collapse; 
+      border-radius: 12px; 
+      overflow: hidden; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+      font-size: 14px; 
+      background: #fff; 
+      table-layout: fixed;
+    }
     th { background: #007a8e; color: white; font-weight: bold; text-transform: uppercase; padding: 12px; text-align: left; }
-    td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+    td { padding: 12px; border-bottom: 1px solid #e0e0e0; word-wrap: break-word; }
     tr:nth-child(even) { background: #f9f9f9; }
     tr:hover { background: #e3f2fd; transition: 0.2s; }
     .no-results { color: #c62828; font-weight: bold; margin-top: 20px; font-size: 16px; }
@@ -107,11 +130,15 @@
     .catch(err => console.error("Error loading JSON:", err));
 
   // Search function
-  function searchCode() {
-    const input = document.getElementById("searchInput").value.trim().toLowerCase();
+  function searchCode(input = null) {
+    if (input === null) {
+      input = document.getElementById("searchInput").value.trim().toLowerCase();
+    }
+
     const resultsDiv = document.getElementById("results");
 
     const filtered = msicData.filter(item =>
+      input === "" ||
       item["MSIC 2025"].toLowerCase().includes(input) ||
       item["DESCRIPTION 2025"].toLowerCase().includes(input) ||
       item["DESCRIPTION 2025 KEGUNAAN MSBR"]?.toLowerCase().includes(input) ||
@@ -123,16 +150,14 @@
       return;
     }
 
-    let html = `
-      <table>
+    let html = `<div class="table-container"><table>
         <tr>
           <th id="tbl-section">Section</th>
           <th id="tbl-sec-desc">Section Description</th>
           <th id="tbl-msic2025">MSIC 2025</th>
           <th id="tbl-desc2025">Description 2025</th>
           <th id="tbl-msbr">Description (MSBR)</th>
-        </tr>
-    `;
+        </tr>`;
 
     filtered.forEach(item => {
       html += `
@@ -146,21 +171,24 @@
       `;
     });
 
-    html += "</table>";
+    html += "</table></div>";
     resultsDiv.innerHTML = html;
   }
 
   // Comparison function
-  function compareMSIC() {
-    const query = document.getElementById("compareInput").value.toLowerCase();
+  function compareMSIC(input = null) {
+    if (input === null) {
+      input = document.getElementById("compareInput").value.toLowerCase();
+    }
     const resultsDiv = document.getElementById("compareResults");
     resultsDiv.innerHTML = "";
 
     const results = msicData2.filter(item =>
-      item["MSIC 2008"].toLowerCase().includes(query) ||
-      item["DESCRIPTION MSIC 2008"].toLowerCase().includes(query) ||
-      item["MSIC 2025"].toLowerCase().includes(query) ||
-      item["DESCRIPTION 2025"].toLowerCase().includes(query)
+      input === "" ||
+      item["MSIC 2008"].toLowerCase().includes(input) ||
+      item["DESCRIPTION MSIC 2008"].toLowerCase().includes(input) ||
+      item["MSIC 2025"].toLowerCase().includes(input) ||
+      item["DESCRIPTION 2025"].toLowerCase().includes(input)
     );
 
     if (results.length === 0) {
@@ -168,15 +196,13 @@
       return;
     }
 
-    let html = `
-      <table>
+    let html = `<div class="table-container"><table>
         <tr>
           <th id="tbl-msic2008">MSIC 2008</th>
           <th id="tbl-desc2008">Description 2008</th>
           <th id="tbl-msic2025c">MSIC 2025</th>
           <th id="tbl-desc2025c">Description 2025</th>
-        </tr>
-    `;
+        </tr>`;
 
     results.forEach(item => {
       html += `
@@ -189,7 +215,7 @@
       `;
     });
 
-    html += "</table>";
+    html += "</table></div>";
     resultsDiv.innerHTML = html;
   }
 
@@ -202,7 +228,11 @@
       e.preventDefault();
       sections.forEach((sec) => (sec.style.display = "none"));
       const target = document.querySelector(btn.getAttribute("href"));
-      if (target) target.style.display = "block";
+      if (target) {
+        target.style.display = "block";
+        if (btn.getAttribute("href") === "#search") searchCode(""); // show all
+        if (btn.getAttribute("href") === "#comparison") compareMSIC(""); // show all
+      }
       window.scrollTo(0, 0);
     });
   });
@@ -218,19 +248,6 @@
       document.getElementById("search-title").innerText = "Carian MSIC";
       document.getElementById("comparison-title").innerText = "Perbandingan MSIC";
       document.getElementById("settings-title").innerText = "Tetapan";
-
-      // table headers
-      document.getElementById("tbl-section").innerText = "Seksyen";
-      document.getElementById("tbl-sec-desc").innerText = "Keterangan Seksyen";
-      document.getElementById("tbl-msic2025").innerText = "MSIC 2025";
-      document.getElementById("tbl-desc2025").innerText = "Keterangan 2025";
-      document.getElementById("tbl-msbr").innerText = "Keterangan (MSBR)";
-
-      document.getElementById("tbl-msic2008").innerText = "MSIC 2008";
-      document.getElementById("tbl-desc2008").innerText = "Keterangan 2008";
-      document.getElementById("tbl-msic2025c").innerText = "MSIC 2025";
-      document.getElementById("tbl-desc2025c").innerText = "Keterangan 2025";
-
       currentLang = "BM";
       document.querySelector(".lang-switch").innerText = "EN";
     } else {
@@ -241,19 +258,6 @@
       document.getElementById("search-title").innerText = "Search MSIC";
       document.getElementById("comparison-title").innerText = "Compare MSIC";
       document.getElementById("settings-title").innerText = "Settings";
-
-      // table headers
-      document.getElementById("tbl-section").innerText = "Section";
-      document.getElementById("tbl-sec-desc").innerText = "Section Description";
-      document.getElementById("tbl-msic2025").innerText = "MSIC 2025";
-      document.getElementById("tbl-desc2025").innerText = "Description 2025";
-      document.getElementById("tbl-msbr").innerText = "Description (MSBR)";
-
-      document.getElementById("tbl-msic2008").innerText = "MSIC 2008";
-      document.getElementById("tbl-desc2008").innerText = "Description 2008";
-      document.getElementById("tbl-msic2025c").innerText = "MSIC 2025";
-      document.getElementById("tbl-desc2025c").innerText = "Description 2025";
-
       currentLang = "EN";
       document.querySelector(".lang-switch").innerText = "BM";
     }
