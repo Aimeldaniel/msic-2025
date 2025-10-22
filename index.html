@@ -77,10 +77,17 @@
 
   <!-- HOME PAGE -->
   <div class="btn-container">
+    <a href="#list" class="btn" id="btn-list">List MSIC</a>
     <a href="#search" class="btn" id="btn-search">Search</a>
     <a href="#comparison" class="btn" id="btn-comparison">Comparison</a>
     <a href="#settings" class="btn" id="btn-settings">Settings</a>
   </div>
+
+  <!-- LIST PAGE -->
+  <section id="list" style="display: none; margin-top: 40px">
+    <h2 id="list-title">List MSIC</h2>
+    <div id="listresults"></div>
+  </section>
 
   <!-- SEARCH PAGE -->
   <section id="search" style="display: none; margin-top: 40px">
@@ -109,159 +116,206 @@
 
   <!-- FOOTER -->
   <footer>
-    <p>@StatsMalaysia | ASEAN 2025 | Malaysia Madani</p>
+    <p>@StatsMalaysia | ASEAN 2025 | Malaysia Madani | BPPIB</p>
   </footer>
 
-  <script src="clock/script.js"></script>
 
   <script>
-  let msicData = [];
-  let msicData2 = [];
+let msicData = [];
+let msicData2 = [];
 
-  // Load JSON files
-  fetch("msic25.json")
-    .then(response => response.json())
-    .then(data => { msicData = data; })
-    .catch(err => console.error("Error loading JSON:", err));
+// Load JSON files
+fetch("msic25.json")
+  .then(response => response.json())
+  .then(data => { msicData = data; })
+  .catch(err => console.error("Error loading JSON:", err));
 
-  fetch("comparisonmsic.json")
-    .then(response => response.json())
-    .then(data => { msicData2 = data; })
-    .catch(err => console.error("Error loading JSON:", err));
+fetch("comparisonmsic.json")
+  .then(response => response.json())
+  .then(data => { msicData2 = data; })
+  .catch(err => console.error("Error loading JSON:", err));
 
-  // Search function
-  function searchCode(input = null) {
-    if (input === null) {
-      input = document.getElementById("searchInput").value.trim().toLowerCase();
-    }
+// LIST FUNCTION – display all MSIC data when "List MSIC" button clicked
+function listCode(input = "") {
+  const resultsDiv = document.getElementById("listresults");
 
-    const resultsDiv = document.getElementById("results");
+  const filtered = msicData.filter(item =>
+    input === "" ||
+    item["MSIC 2025"].toLowerCase().includes(input) ||
+    item["DESCRIPTION 2025"].toLowerCase().includes(input) ||
+    item["DESCRIPTION 2025 KEGUNAAN MSBR"]?.toLowerCase().includes(input) ||
+    item["SECTION DESCRIPTION"].toLowerCase().includes(input)
+  );
 
-    const filtered = msicData.filter(item =>
-      input === "" ||
-      item["MSIC 2025"].toLowerCase().includes(input) ||
-      item["DESCRIPTION 2025"].toLowerCase().includes(input) ||
-      item["DESCRIPTION 2025 KEGUNAAN MSBR"]?.toLowerCase().includes(input) ||
-      item["SECTION DESCRIPTION"].toLowerCase().includes(input)
-    );
-
-    if (filtered.length === 0) {
-      resultsDiv.innerHTML = '<p class="no-results">No results found.</p>';
-      return;
-    }
-
-    let html = `<div class="table-container"><table>
-        <tr>
-          <th id="tbl-section">Section</th>
-          <th id="tbl-sec-desc">Section Description</th>
-          <th id="tbl-msic2025">MSIC 2025</th>
-          <th id="tbl-desc2025">Description 2025</th>
-          <th id="tbl-msbr">Description (MSBR)</th>
-        </tr>`;
-
-    filtered.forEach(item => {
-      html += `
-        <tr>
-          <td>${item["SECTION 2025"]}</td>
-          <td>${item["SECTION DESCRIPTION"]}</td>
-          <td>${item["MSIC 2025"]}</td>
-          <td>${item["DESCRIPTION 2025"]}</td>
-          <td>${item["DESCRIPTION 2025 KEGUNAAN MSBR"] || ""}</td>
-        </tr>
-      `;
-    });
-
-    html += "</table></div>";
-    resultsDiv.innerHTML = html;
+  if (filtered.length === 0) {
+    resultsDiv.innerHTML = '<p class="no-results">No results found.</p>';
+    return;
   }
 
-  // Comparison function
-  function compareMSIC(input = null) {
-    if (input === null) {
-      input = document.getElementById("compareInput").value.toLowerCase();
-    }
-    const resultsDiv = document.getElementById("compareResults");
-    resultsDiv.innerHTML = "";
+  let html = `<div class="table-container"><table>
+      <tr>
+        <th id="tbl-section">Section</th>
+        <th id="tbl-sec-desc">Section Description</th>
+        <th id="tbl-msic2025">MSIC 2025</th>
+        <th id="tbl-desc2025">Description 2025</th>
+        <th id="tbl-msbr">Description (MSBR)</th>
+      </tr>`;
 
-    const results = msicData2.filter(item =>
-      input === "" ||
-      item["MSIC 2008"].toLowerCase().includes(input) ||
-      item["DESCRIPTION MSIC 2008"].toLowerCase().includes(input) ||
-      item["MSIC 2025"].toLowerCase().includes(input) ||
-      item["DESCRIPTION 2025"].toLowerCase().includes(input)
-    );
-
-    if (results.length === 0) {
-      resultsDiv.innerHTML = '<p class="no-results">No results found.</p>';
-      return;
-    }
-
-    let html = `<div class="table-container"><table>
-        <tr>
-          <th id="tbl-msic2008">MSIC 2008</th>
-          <th id="tbl-desc2008">Description 2008</th>
-          <th id="tbl-msic2025c">MSIC 2025</th>
-          <th id="tbl-desc2025c">Description 2025</th>
-        </tr>`;
-
-    results.forEach(item => {
-      html += `
-        <tr>
-          <td>${item["MSIC 2008"]}</td>
-          <td>${item["DESCRIPTION MSIC 2008"]}</td>
-          <td>${item["MSIC 2025"]}</td>
-          <td>${item["DESCRIPTION 2025"]}</td>
-        </tr>
-      `;
-    });
-
-    html += "</table></div>";
-    resultsDiv.innerHTML = html;
-  }
-
-  // Page navigation
-  const sections = document.querySelectorAll("section");
-  const buttons = document.querySelectorAll(".btn-container a");
-
-  buttons.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      sections.forEach((sec) => (sec.style.display = "none"));
-      const target = document.querySelector(btn.getAttribute("href"));
-      if (target) {
-        target.style.display = "block";
-        if (btn.getAttribute("href") === "#search") searchCode(""); // show all
-        if (btn.getAttribute("href") === "#comparison") compareMSIC(""); // show all
-      }
-      window.scrollTo(0, 0);
-    });
+  filtered.forEach(item => {
+    html += `
+      <tr>
+        <td>${item["SECTION 2025"]}</td>
+        <td>${item["SECTION DESCRIPTION"]}</td>
+        <td>${item["MSIC 2025"]}</td>
+        <td>${item["DESCRIPTION 2025"]}</td>
+        <td>${item["DESCRIPTION 2025 KEGUNAAN MSBR"] || ""}</td>
+      </tr>
+    `;
   });
 
-  // Language toggle
-  let currentLang = "EN";
-  function toggleLanguage() {
-    if (currentLang === "EN") {
-      document.getElementById("subtitle").innerText = "Kod Piawaian Perindustrian Malaysia";
-      document.getElementById("btn-search").innerText = "Carian";
-      document.getElementById("btn-comparison").innerText = "Perbandingan";
-      document.getElementById("btn-settings").innerText = "Tetapan";
-      document.getElementById("search-title").innerText = "Carian MSIC";
-      document.getElementById("comparison-title").innerText = "Perbandingan MSIC";
-      document.getElementById("settings-title").innerText = "Tetapan";
-      currentLang = "BM";
-      document.querySelector(".lang-switch").innerText = "EN";
-    } else {
-      document.getElementById("subtitle").innerText = "MALAYSIAN STANDARD INDUSTRIAL CODE";
-      document.getElementById("btn-search").innerText = "Search";
-      document.getElementById("btn-comparison").innerText = "Comparison";
-      document.getElementById("btn-settings").innerText = "Settings";
-      document.getElementById("search-title").innerText = "Search MSIC";
-      document.getElementById("comparison-title").innerText = "Compare MSIC";
-      document.getElementById("settings-title").innerText = "Settings";
-      currentLang = "EN";
-      document.querySelector(".lang-switch").innerText = "BM";
-    }
+  html += "</table></div>";
+  resultsDiv.innerHTML = html;
+}
+
+// SEARCH FUNCTION
+function searchCode(input = null) {
+  if (input === null) {
+    input = document.getElementById("searchInput").value.trim().toLowerCase();
   }
-  </script>
+
+  const resultsDiv = document.getElementById("results");
+
+  const filtered = msicData.filter(item =>
+    input === "" ||
+    item["MSIC 2025"].toLowerCase().includes(input) ||
+    item["DESCRIPTION 2025"].toLowerCase().includes(input) ||
+    item["DESCRIPTION 2025 KEGUNAAN MSBR"]?.toLowerCase().includes(input) ||
+    item["SECTION DESCRIPTION"].toLowerCase().includes(input)
+  );
+
+  if (filtered.length === 0) {
+    resultsDiv.innerHTML = '<p class="no-results">No results found.</p>';
+    return;
+  }
+
+  let html = `<div class="table-container"><table>
+      <tr>
+        <th>Section</th>
+        <th>Section Description</th>
+        <th>MSIC 2025</th>
+        <th>Description 2025</th>
+        <th>Description (MSBR)</th>
+      </tr>`;
+
+  filtered.forEach(item => {
+    html += `
+      <tr>
+        <td>${item["SECTION 2025"]}</td>
+        <td>${item["SECTION DESCRIPTION"]}</td>
+        <td>${item["MSIC 2025"]}</td>
+        <td>${item["DESCRIPTION 2025"]}</td>
+        <td>${item["DESCRIPTION 2025 KEGUNAAN MSBR"] || ""}</td>
+      </tr>
+    `;
+  });
+
+  html += "</table></div>";
+  resultsDiv.innerHTML = html;
+}
+
+// COMPARISON FUNCTION
+function compareMSIC(input = null) {
+  if (input === null) {
+    input = document.getElementById("compareInput").value.toLowerCase();
+  }
+  const resultsDiv = document.getElementById("compareResults");
+  resultsDiv.innerHTML = "";
+
+  const results = msicData2.filter(item =>
+    input === "" ||
+    item["MSIC 2008"].toLowerCase().includes(input) ||
+    item["DESCRIPTION MSIC 2008"].toLowerCase().includes(input) ||
+    item["MSIC 2025"].toLowerCase().includes(input) ||
+    item["DESCRIPTION 2025"].toLowerCase().includes(input)
+  );
+
+  if (results.length === 0) {
+    resultsDiv.innerHTML = '<p class="no-results">No results found.</p>';
+    return;
+  }
+
+  let html = `<div class="table-container"><table>
+      <tr>
+        <th>MSIC 2008</th>
+        <th>Description 2008</th>
+        <th>MSIC 2025</th>
+        <th>Description 2025</th>
+      </tr>`;
+
+  results.forEach(item => {
+    html += `
+      <tr>
+        <td>${item["MSIC 2008"]}</td>
+        <td>${item["DESCRIPTION MSIC 2008"]}</td>
+        <td>${item["MSIC 2025"]}</td>
+        <td>${item["DESCRIPTION 2025"]}</td>
+      </tr>
+    `;
+  });
+
+  html += "</table></div>";
+  resultsDiv.innerHTML = html;
+}
+
+// PAGE NAVIGATION
+const sections = document.querySelectorAll("section");
+const buttons = document.querySelectorAll(".btn-container a");
+
+buttons.forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    sections.forEach((sec) => (sec.style.display = "none"));
+    const target = document.querySelector(btn.getAttribute("href"));
+    if (target) {
+      target.style.display = "block";
+      // Check button target and load data
+      if (btn.getAttribute("href") === "#list") listCode(""); // show all MSIC automatically
+      if (btn.getAttribute("href") === "#search") searchCode(""); // show all
+      if (btn.getAttribute("href") === "#comparison") compareMSIC(""); // show all
+    }
+    window.scrollTo(0, 0);
+  });
+});
+
+// LANGUAGE TOGGLE
+let currentLang = "EN";
+function toggleLanguage() {
+  if (currentLang === "EN") {
+    document.getElementById("subtitle").innerText = "Kod Piawaian Perindustrian Malaysia";
+    document.getElementById("btn-list").innerText = "Senarai MSIC";
+    document.getElementById("btn-search").innerText = "Carian";
+    document.getElementById("btn-comparison").innerText = "Perbandingan";
+    document.getElementById("btn-settings").innerText = "Tetapan";
+    document.getElementById("list-title").innerText = "Senarai MSIC";
+    document.getElementById("search-title").innerText = "Carian MSIC";
+    document.getElementById("comparison-title").innerText = "Perbandingan MSIC";
+    document.getElementById("settings-title").innerText = "Tetapan";
+    currentLang = "BM";
+    document.querySelector(".lang-switch").innerText = "EN";
+  } else {
+    document.getElementById("subtitle").innerText = "MALAYSIAN STANDARD INDUSTRIAL CODE";
+    document.getElementById("btn-list").innerText = "List MSIC";
+    document.getElementById("btn-search").innerText = "Search";
+    document.getElementById("btn-comparison").innerText = "Comparison";
+    document.getElementById("btn-settings").innerText = "Settings";
+    document.getElementById("list-title").innerText = "List MSIC";
+    document.getElementById("search-title").innerText = "Search MSIC";
+    document.getElementById("comparison-title").innerText = "Compare MSIC";
+    document.getElementById("settings-title").innerText = "Settings";
+    currentLang = "EN";
+    document.querySelector(".lang-switch").innerText = "BM";
+  }
+}
+</script>
 </body>
 </html>
