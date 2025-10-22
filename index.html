@@ -15,7 +15,7 @@
       margin: 0; 
       padding: 0; 
       text-align: center; 
-      padding-bottom: 80px; /* prevent footer overlap */
+      padding-bottom: 80px;
     }
     header { margin: 20px 0; position: relative; }
     .window-box { display: inline-block; border: 2px solid #000; border-radius: 5px; padding: 20px 40px; margin: 20px auto; background: #fff; box-shadow: 4px 4px 0px #000; }
@@ -25,7 +25,6 @@
     .btn { display: inline-block; padding: 15px 40px; font-size: 18px; font-weight: bold; border: 2px solid #000; border-radius: 10px; background: #fff; cursor: pointer; box-shadow: 4px 4px 0px #000; transition: all 0.2s; text-decoration: none; color: black; }
     .btn:hover { background: #f0f0f0; transform: translateY(-3px); }
 
-    /* Comparison Page */
     .comparison-container { display: flex; flex-wrap: wrap; justify-content: space-around; margin: 30px auto; max-width: 1000px; }
     .comparison-box { flex: 1 1 45%; background: #b3e5f5; border-radius: 8px; padding: 20px; margin: 10px; }
     .comparison-box h2 { font-size: 20px; margin-bottom: 15px; }
@@ -34,10 +33,8 @@
 
     footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #007a8e; color: #fff; text-align: center; padding: 10px; }
 
-    /* Language Switcher */
     .lang-switch { position: absolute; top: 15px; right: 15px; padding: 8px 15px; background: #007a8e; color: white; border: none; border-radius: 8px; cursor: pointer; }
 
-    /* Table styles */
     .table-container { 
       width: 95%; 
       max-width: 1200px; 
@@ -45,7 +42,7 @@
       overflow-x: auto; 
     }
     table { 
-      width: 1200px; /* fixed width */
+      width: 1200px;
       min-width: 1000px; 
       border-collapse: collapse; 
       border-radius: 12px; 
@@ -109,7 +106,7 @@
 
   <!-- FOOTER -->
   <footer>
-    <p>@StatsMalaysia | ASEAN 2025 | Malaysia Madani</p>
+    <p>@StatsMalaysia | ASEAN 2025 | Malaysia Madani | BPPIB</p>
   </footer>
 
   <script src="clock/script.js"></script>
@@ -121,7 +118,9 @@
   // Load JSON files
   fetch("msic25.json")
     .then(response => response.json())
-    .then(data => { msicData = data; })
+    .then(data => { 
+      msicData = data; 
+    })
     .catch(err => console.error("Error loading JSON:", err));
 
   fetch("comparisonmsic.json")
@@ -262,6 +261,18 @@
       document.querySelector(".lang-switch").innerText = "BM";
     }
   }
+
+  // 🟢 Auto show all MSIC data when page loads
+  window.addEventListener("load", () => {
+    const checkData = setInterval(() => {
+      if (msicData.length > 0) {
+        searchCode(""); // show all data
+        document.querySelector("#search").style.display = "block"; // open Search section
+        document.querySelector(".btn-container").style.display = "none"; // hide main menu (optional)
+        clearInterval(checkData);
+      }
+    }, 200);
+  });
   </script>
 </body>
 </html>
