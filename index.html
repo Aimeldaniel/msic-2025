@@ -64,8 +64,7 @@
 </head>
 <body>
   
-  <!-- HEADER -->
-  <header>
+  <!-- TITLE -->
     <div class="header-container">
       <div class="window-box">
         <h1>MSIC</h1>
@@ -73,7 +72,7 @@
       </div>
       <button class="lang-switch" onclick="toggleLanguage()">BM</button>
     </div>
-  </header> 
+  
 
   <!-- HOME PAGE -->
   <div class="btn-container">
@@ -125,12 +124,12 @@ let msicData = [];
 let msicData2 = [];
 
 // Load JSON files
-fetch("msic25.json")
+fetch("msic2025.json")
   .then(response => response.json())
   .then(data => { msicData = data; })
   .catch(err => console.error("Error loading JSON:", err));
 
-fetch("comparisonmsic.json")
+fetch("comparisonmsicv2.json")
   .then(response => response.json())
   .then(data => { msicData2 = data; })
   .catch(err => console.error("Error loading JSON:", err));
@@ -141,10 +140,10 @@ function listCode(input = "") {
 
   const filtered = msicData.filter(item =>
     input === "" ||
-    item["MSIC 2025"].toLowerCase().includes(input) ||
-    item["DESCRIPTION 2025"].toLowerCase().includes(input) ||
-    item["DESCRIPTION 2025 KEGUNAAN MSBR"]?.toLowerCase().includes(input) ||
-    item["SECTION DESCRIPTION"].toLowerCase().includes(input)
+    item["SECTION MSIC 2025"].toLowerCase().includes(input) ||
+    item["DESCRIPTION MSIC 2025"].toLowerCase().includes(input) ||
+    item["MSIC 2025"]?.toLowerCase().includes(input) ||
+    item["DESCRIPTION 2025"].toLowerCase().includes(input)
   );
 
   if (filtered.length === 0) {
@@ -155,20 +154,18 @@ function listCode(input = "") {
   let html = `<div class="table-container"><table>
       <tr>
         <th id="tbl-section">Section</th>
-        <th id="tbl-sec-desc">Section Description</th>
+        <th id="tbl-sec-desc">Description MSIC 2025</th>
         <th id="tbl-msic2025">MSIC 2025</th>
         <th id="tbl-desc2025">Description 2025</th>
-        <th id="tbl-msbr">Description (MSBR)</th>
       </tr>`;
 
   filtered.forEach(item => {
     html += `
       <tr>
-        <td>${item["SECTION 2025"]}</td>
-        <td>${item["SECTION DESCRIPTION"]}</td>
+        <td>${item["SECTION MSIC 2025"]}</td>
+        <td>${item["DESCRIPTION MSIC 2025"] || item["DESCRIPTION MSIC 2025 "] || ""}</td>
         <td>${item["MSIC 2025"]}</td>
         <td>${item["DESCRIPTION 2025"]}</td>
-        <td>${item["DESCRIPTION 2025 KEGUNAAN MSBR"] || ""}</td>
       </tr>
     `;
   });
@@ -187,10 +184,10 @@ function searchCode(input = null) {
 
   const filtered = msicData.filter(item =>
     input === "" ||
-    item["MSIC 2025"].toLowerCase().includes(input) ||
-    item["DESCRIPTION 2025"].toLowerCase().includes(input) ||
-    item["DESCRIPTION 2025 KEGUNAAN MSBR"]?.toLowerCase().includes(input) ||
-    item["SECTION DESCRIPTION"].toLowerCase().includes(input)
+    item["SECTION MSIC 2025"].toLowerCase().includes(input) ||
+    item["DESCRIPTION MSIC 2025 "].toLowerCase().includes(input) ||
+    item["MSIC 2025"]?.toLowerCase().includes(input) ||
+    item["DESCRIPTION 2025"].toLowerCase().includes(input)
   );
 
   if (filtered.length === 0) {
@@ -201,20 +198,18 @@ function searchCode(input = null) {
   let html = `<div class="table-container"><table>
       <tr>
         <th>Section</th>
-        <th>Section Description</th>
+        <th>Description MSIC 2025</th>
         <th>MSIC 2025</th>
         <th>Description 2025</th>
-        <th>Description (MSBR)</th>
       </tr>`;
 
   filtered.forEach(item => {
     html += `
       <tr>
-        <td>${item["SECTION 2025"]}</td>
-        <td>${item["SECTION DESCRIPTION"]}</td>
+        <td>${item["SECTION MSIC 2025"]}</td>
+        <td>${item["DESCRIPTION MSIC 2025"] || item["DESCRIPTION MSIC 2025 "] || ""}</td>
         <td>${item["MSIC 2025"]}</td>
         <td>${item["DESCRIPTION 2025"]}</td>
-        <td>${item["DESCRIPTION 2025 KEGUNAAN MSBR"] || ""}</td>
       </tr>
     `;
   });
@@ -246,6 +241,8 @@ function compareMSIC(input = null) {
 
   let html = `<div class="table-container"><table>
       <tr>
+        <th>Section</th>
+        <th>Description Msic 2025</th>
         <th>MSIC 2008</th>
         <th>Description 2008</th>
         <th>MSIC 2025</th>
@@ -255,6 +252,8 @@ function compareMSIC(input = null) {
   results.forEach(item => {
     html += `
       <tr>
+        <td>${item["SECTION MSIC 2025"]}</td>
+        <td>${item["DESCRIPTION MSIC 2025"] || item["DESCRIPTION MSIC 2025 "] || ""}</td>
         <td>${item["MSIC 2008"]}</td>
         <td>${item["DESCRIPTION MSIC 2008"]}</td>
         <td>${item["MSIC 2025"]}</td>
