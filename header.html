@@ -1,24 +1,79 @@
-<!-- header.html -->
-  <header>
-      <h2 id="header-title">
-        KEMENTERIAN EKONOMI<br />JABATAN PERANGKAAN MALAYSIA
-      </h2>
-    <!-- Language Switcher -->
-    <!-- <button class="toggle" id="toggle">🌙 Dark Mode</button> -->
-    
-    </header> 
-
-  <div class="right-section">
-<!--
-    <div class="clock-container">
-      <div class="clock">
-        <div class="needle hour"></div>
-        <div class="needle minute"></div>
-        <div class="needle second"></div>
-        <div class="center-point"></div>
-      </div>
-      <div class="time"></div>
-      <div class="date"></div>
+<header>
+  <div class="header-container">
+    <div class="header-logo">
+      <img src="LOGO-MALAYSIA-MADANI-SAHAJA.png" alt="Logo Malaysia" />
+    </div>
+    <div class="header-text">
+      <h1 id="header-title">KEMENTERIAN EKONOMI</h1>
+      <h2 id="header-subtitle">JABATAN PERANGKAAN MALAYSIA</h2>
     </div>
   </div>
-</div> -->
+</header>
+
+<style>
+/* ===== HEADER STYLING ===== */
+header {
+  background: linear-gradient(90deg, #00247d, #c8102e);
+  color: white;
+  padding: 20px 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  border-bottom: 5px solid #ffcc00;
+}
+
+.header-container {
+  max-width: 1000px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header-logo img {
+  width: 80px;
+  height: auto;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+}
+
+.header-text {
+  text-align: center;
+  font-family: "Poppins", Arial, sans-serif;
+  letter-spacing: 1px;
+}
+
+#header-title {
+  font-size: 1.6rem;
+  margin: 0;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+#header-subtitle {
+  font-size: 1.1rem;
+  margin-top: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .header-container {
+    flex-direction: column;
+  }
+
+  .header-logo img {
+    width: 70px;
+  }
+
+  #header-title {
+    font-size: 1.3rem;
+  }
+
+  #header-subtitle {
+    font-size: 1rem;
+  }
+}
+</style>
+
